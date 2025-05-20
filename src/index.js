@@ -118,13 +118,20 @@ const handleCommand = async (input) => {
                         console.log('Invalid input');
                 }
                 break;
+            case 'hash':
+                if (!args[0]) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.calculateHash(args[0], currentDirectory);
+                break;
             case '.exit':
                 console.log(`Thank you for using File Manager, ${username}, goodbye!`);
                 process.exit(0);
             default:
                 console.log('Invalid input');
         }
-        if (command !== 'os') {
+        if (command !== 'os' && command !== 'hash') {
             console.log(`You are currently in ${currentDirectory}`);
         }
     } catch (error) {

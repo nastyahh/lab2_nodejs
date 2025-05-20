@@ -1,6 +1,7 @@
 import { createReadStream, createWriteStream, promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { pipeline } from 'stream/promises';
+import { createHash } from 'crypto';
 
 export const fileOperations = {
     async readFile(filePath) {
@@ -80,6 +81,25 @@ export const fileOperations = {
         try {
             const fullPath = join(currentPath, filePath);
             await fs.unlink(fullPath);
+        } catch (error) {
+            throw new Error('Operation failed');
+        }
+    },
+
+    async calculateHash(filePath, currentPath) {
+        try {
+            const fullPath = join(currentPath, filePath);
+            const fileStream = createReadStream(fullPath);
+            const hash = createHash('sha256');
+
+            for await (const chunk of fileStream) {
+                hash.update(chunk);
+            }
+
+            console.log('\nFile hash:');
+            console.log('----------------------------');
+            console.log(hash.digest('hex'));
+            console.log('----------------------------\n');
         } catch (error) {
             throw new Error('Operation failed');
         }
