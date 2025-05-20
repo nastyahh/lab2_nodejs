@@ -2,6 +2,7 @@ import { createReadStream, createWriteStream, promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { pipeline } from 'stream/promises';
 import { createHash } from 'crypto';
+import { createBrotliCompress, createBrotliDecompress } from 'zlib';
 
 export const fileOperations = {
     async readFile(filePath) {
@@ -99,6 +100,54 @@ export const fileOperations = {
             console.log('\nFile hash:');
             console.log('----------------------------');
             console.log(hash.digest('hex'));
+            console.log('----------------------------\n');
+        } catch (error) {
+            throw new Error('Operation failed');
+        }
+    },
+
+    async compressFile(sourcePath, targetPath, currentPath) {
+        try {
+            const sourceFilePath = join(currentPath, sourcePath);
+            const targetFilePath = join(currentPath, targetPath);
+
+            // Проверяем существование исходного файла
+            await fs.access(sourceFilePath);
+
+            const readStream = createReadStream(sourceFilePath);
+            const writeStream = createWriteStream(targetFilePath);
+            const brotliCompress = createBrotliCompress();
+
+            await pipeline(readStream, brotliCompress, writeStream);
+
+            console.log('\nFile compressed successfully');
+            console.log('----------------------------');
+            console.log(`Source: ${sourceFilePath}`);
+            console.log(`Target: ${targetFilePath}`);
+            console.log('----------------------------\n');
+        } catch (error) {
+            throw new Error('Operation failed');
+        }
+    },
+
+    async decompressFile(sourcePath, targetPath, currentPath) {
+        try {
+            const sourceFilePath = join(currentPath, sourcePath);
+            const targetFilePath = join(currentPath, targetPath);
+
+            // Проверяем существование исходного файла
+            await fs.access(sourceFilePath);
+
+            const readStream = createReadStream(sourceFilePath);
+            const writeStream = createWriteStream(targetFilePath);
+            const brotliDecompress = createBrotliDecompress();
+
+            await pipeline(readStream, brotliDecompress, writeStream);
+
+            console.log('\nFile decompressed successfully');
+            console.log('----------------------------');
+            console.log(`Source: ${sourceFilePath}`);
+            console.log(`Target: ${targetFilePath}`);
             console.log('----------------------------\n');
         } catch (error) {
             throw new Error('Operation failed');

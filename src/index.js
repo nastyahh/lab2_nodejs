@@ -125,13 +125,27 @@ const handleCommand = async (input) => {
                 }
                 await fileOperations.calculateHash(args[0], currentDirectory);
                 break;
+            case 'compress':
+                if (args.length !== 2) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.compressFile(args[0], args[1], currentDirectory);
+                break;
+            case 'decompress':
+                if (args.length !== 2) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.decompressFile(args[0], args[1], currentDirectory);
+                break;
             case '.exit':
                 console.log(`Thank you for using File Manager, ${username}, goodbye!`);
                 process.exit(0);
             default:
                 console.log('Invalid input');
         }
-        if (command !== 'os' && command !== 'hash') {
+        if (command !== 'os' && command !== 'hash' && command !== 'compress' && command !== 'decompress') {
             console.log(`You are currently in ${currentDirectory}`);
         }
     } catch (error) {
