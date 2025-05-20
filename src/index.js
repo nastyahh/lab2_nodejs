@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { createInterface } from 'readline';
 import { navigation } from './navigation.js';
+import { fileOperations } from './fileOperations.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -49,6 +50,48 @@ const handleCommand = async (input) => {
                 break;
             case 'ls':
                 await navigation.listDirectory(currentDirectory);
+                break;
+            case 'cat':
+                if (!args[0]) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.readFile(join(currentDirectory, args[0]));
+                break;
+            case 'add':
+                if (!args[0]) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.createFile(args[0], currentDirectory);
+                break;
+            case 'rn':
+                if (args.length !== 2) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.renameFile(args[0], args[1], currentDirectory);
+                break;
+            case 'cp':
+                if (args.length !== 2) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.copyFile(args[0], args[1], currentDirectory);
+                break;
+            case 'mv':
+                if (args.length !== 2) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.moveFile(args[0], args[1], currentDirectory);
+                break;
+            case 'rm':
+                if (!args[0]) {
+                    console.log('Invalid input');
+                    return;
+                }
+                await fileOperations.removeFile(args[0], currentDirectory);
                 break;
             case '.exit':
                 console.log(`Thank you for using File Manager, ${username}, goodbye!`);
