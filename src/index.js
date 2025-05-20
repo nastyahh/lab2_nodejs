@@ -4,6 +4,7 @@ import { dirname, join } from 'path';
 import { createInterface } from 'readline';
 import { navigation } from './navigation.js';
 import { fileOperations } from './fileOperations.js';
+import { osInfo } from './osInfo.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,7 +12,6 @@ const __dirname = dirname(__filename);
 let username = '';
 let currentDirectory = homedir();
 
-// Parse command line arguments
 const args = process.argv.slice(2);
 for (let i = 0; i < args.length; i++) {
     if (args[i].startsWith('--username=')) {
@@ -93,13 +93,40 @@ const handleCommand = async (input) => {
                 }
                 await fileOperations.removeFile(args[0], currentDirectory);
                 break;
+            case 'os':
+                if (!args[0]) {
+                    console.log('Invalid input');
+                    return;
+                }
+                switch (args[0]) {
+                    case '--EOL':
+                        osInfo.getEOL();
+                        break;
+                    case '--cpus':
+                        osInfo.getCPUs();
+                        break;
+                    case '--homedir':
+                        osInfo.getHomeDir();
+                        break;
+                    case '--username':
+                        osInfo.getUsername();
+                        break;
+                    case '--architecture':
+                        osInfo.getArchitecture();
+                        break;
+                    default:
+                        console.log('Invalid input');
+                }
+                break;
             case '.exit':
                 console.log(`Thank you for using File Manager, ${username}, goodbye!`);
                 process.exit(0);
             default:
                 console.log('Invalid input');
         }
-        console.log(`You are currently in ${currentDirectory}`);
+        if (command !== 'os') {
+            console.log(`You are currently in ${currentDirectory}`);
+        }
     } catch (error) {
         console.log('Operation failed');
     }
@@ -107,7 +134,6 @@ const handleCommand = async (input) => {
 
 rl.on('line', handleCommand);
 
-// Handle Ctrl+C
 process.on('SIGINT', () => {
     console.log(`\nThank you for using File Manager, ${username}, goodbye!`);
     process.exit(0);
